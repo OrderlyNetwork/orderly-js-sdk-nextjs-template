@@ -3,8 +3,11 @@
 import React from "react";
 import { OrdersModule } from "@orderly.network/portfolio";
 import { Box } from "@orderly.network/ui";
+import { useOrderlyConfig } from "@/hooks/useOrderlyConfig";
 
 export default function OrdersView() {
+  const config = useOrderlyConfig();
+
   return (
     <Box
       p={6}
@@ -20,7 +23,9 @@ export default function OrdersView() {
         height: "calc(100vh - 48px - 29px - 48px)",
       }}
     >
-      <OrdersModule.OrdersPage />
+      <OrdersModule.OrdersPage
+        sharePnLConfig={config.tradingPage.sharePnLConfig}
+      />
     </Box>
   );
 }

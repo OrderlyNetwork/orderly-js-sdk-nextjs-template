@@ -6,10 +6,17 @@ import {
   parseI18nLang,
   removeLangPrefix,
 } from "@orderly.network/i18n/utils";
-import { PathEnum } from "./constant";
-import { DEFAULT_SYMBOL } from "./storage";
+import { DEFAULT_SYMBOL, PathEnum } from "./constant";
 
-const localePaths = Object.values(PathEnum);
+const knownAppPaths = Object.values(PathEnum).filter(
+  (path) => path !== PathEnum.Root,
+);
+
+function matchesKnownAppPath(pathname: string) {
+  return knownAppPaths.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`),
+  );
+}
 
 // Get the locale from cookie
 function getLocaleFromCookie(request: NextRequest) {
@@ -40,10 +47,8 @@ export function middleware(request: NextRequest) {
 
   if (!localePath && pathname === "/") {
     newPathname = `/${cookieLocale}${PathEnum.Perp}/${DEFAULT_SYMBOL}`;
-  } else if (!localePath && localePaths.includes(pathname as PathEnum)) {
+  } else if (!localePath && matchesKnownAppPath(pathname)) {
     newPathname = `/${cookieLocale}${pathname}`;
-  } else if (!localePath && pathname.startsWith(`${PathEnum.Perp}/`)) {
-    newPathname = `/${cookieLocale}${PathEnum.Perp}/${DEFAULT_SYMBOL}`;
   }
 
   if (newPathname !== pathname) {

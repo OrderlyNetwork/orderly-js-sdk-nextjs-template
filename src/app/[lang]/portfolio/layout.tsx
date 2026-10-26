@@ -7,11 +7,11 @@ import {
 } from "@orderly.network/portfolio";
 import { PathEnum } from "@/constant";
 import { useNav } from "@/hooks/useNav";
-import { useOrderlyConfig } from "@/hooks/useOrderlyConfig";
 import { usePathWithoutLang } from "@/hooks/usePathWithoutLang";
+import { useScaffoldConfig } from "@/hooks/useScaffoldConfig";
 
 export default function PortfolioLayout(props: { children: ReactNode }) {
-  const config = useOrderlyConfig();
+  const config = useScaffoldConfig();
   const path = usePathWithoutLang();
 
   const { onRouteChange } = useNav();
@@ -27,9 +27,10 @@ export default function PortfolioLayout(props: { children: ReactNode }) {
 
   return (
     <PortfolioLayoutWidget
-      footerProps={config.scaffold.footerProps}
+      footerProps={config.footerProps}
+      bottomNavProps={config.bottomNavProps}
       mainNavProps={{
-        ...config.scaffold.mainNavProps,
+        ...config.mainNavProps,
         initialMenu: PathEnum.Portfolio,
       }}
       routerAdapter={{
@@ -38,7 +39,6 @@ export default function PortfolioLayout(props: { children: ReactNode }) {
       leftSideProps={{
         current: currentPath,
       }}
-      bottomNavProps={config.scaffold.bottomNavProps}
     >
       {props.children}
     </PortfolioLayoutWidget>
