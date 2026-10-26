@@ -31,6 +31,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(request.nextUrl);
   }
 
+  if (pathWithoutLang === PathEnum.Rewards) {
+    request.nextUrl.pathname = `/${localePath ?? cookieLocale}${PathEnum.RewardsAffiliate}`;
+    return NextResponse.redirect(request.nextUrl);
+  }
+
   let newPathname = pathname;
 
   if (!localePath && pathname === "/") {
