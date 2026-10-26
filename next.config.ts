@@ -8,9 +8,6 @@ const nextConfig: NextConfig = {
   //   return config;
   // },
   reactStrictMode: true,
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },

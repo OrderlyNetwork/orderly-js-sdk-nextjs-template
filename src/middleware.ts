@@ -24,24 +24,20 @@ export function middleware(request: NextRequest) {
   const localePath = getLocalePathFromPathname(pathname);
 
   const pathWithoutLang = removeLangPrefix(pathname);
+  const cookieLocale = getLocaleFromCookie(request);
 
   if (pathWithoutLang === PathEnum.Perp) {
-    request.nextUrl.pathname = `${localePath ? `/${localePath}` : ""}${PathEnum.Perp}/${DEFAULT_SYMBOL}`;
+    request.nextUrl.pathname = `/${localePath ?? cookieLocale}${PathEnum.Perp}/${DEFAULT_SYMBOL}`;
     return NextResponse.redirect(request.nextUrl);
   }
 
-  // If the pathname has a locale path, return
-  if (localePath) return;
-
   let newPathname = pathname;
 
-  const cookieLocale = getLocaleFromCookie(request);
-
-  if (pathname === "/") {
+  if (!localePath && pathname === "/") {
     newPathname = `/${cookieLocale}${PathEnum.Perp}/${DEFAULT_SYMBOL}`;
-  } else if (localePaths.includes(pathname as PathEnum)) {
+  } else if (!localePath && localePaths.includes(pathname as PathEnum)) {
     newPathname = `/${cookieLocale}${pathname}`;
-  } else if (pathname.startsWith(PathEnum.Perp)) {
+  } else if (!localePath && pathname.startsWith(`${PathEnum.Perp}/`)) {
     newPathname = `/${cookieLocale}${PathEnum.Perp}/${DEFAULT_SYMBOL}`;
   }
 
@@ -50,6 +46,10 @@ export function middleware(request: NextRequest) {
     console.log(`redirect: ${pathname} ==> ${newPathname}`);
     return NextResponse.redirect(request.nextUrl);
   }
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-orderly-locale", localePath ?? cookieLocale);
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {
