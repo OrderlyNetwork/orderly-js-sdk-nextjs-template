@@ -7,6 +7,7 @@ import {
   removeLangPrefix,
 } from "@orderly.network/i18n/utils";
 import { DEFAULT_SYMBOL, PathEnum } from "./constant";
+import { migratePredictionPath } from "./navigationPaths";
 
 const knownAppPaths = Object.values(PathEnum).filter(
   (path) => path !== PathEnum.Root,
@@ -43,12 +44,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(request.nextUrl);
   }
 
-  let newPathname = pathname;
+  const migratedPathname = migratePredictionPath(pathname);
+  let newPathname = migratedPathname;
 
   if (!localePath && pathname === "/") {
     newPathname = `/${cookieLocale}${PathEnum.Perp}/${DEFAULT_SYMBOL}`;
-  } else if (!localePath && matchesKnownAppPath(pathname)) {
-    newPathname = `/${cookieLocale}${pathname}`;
+  } else if (!localePath && matchesKnownAppPath(migratedPathname)) {
+    newPathname = `/${cookieLocale}${migratedPathname}`;
   }
 
   if (newPathname !== pathname) {
