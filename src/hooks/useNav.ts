@@ -17,17 +17,24 @@ export function useNav() {
         return;
       }
 
+      const announcementNavigation = option.scope === "announcement";
       const hashStart = option.href.indexOf("#");
       const pathWithSearch =
         hashStart < 0 ? option.href : option.href.slice(0, hashStart);
       const hash =
-        hashStart < 0 ? window.location.hash : option.href.slice(hashStart);
+        hashStart < 0
+          ? announcementNavigation
+            ? ""
+            : window.location.hash
+          : option.href.slice(hashStart);
       const queryStart = pathWithSearch.indexOf("?");
       const pathname =
         queryStart < 0 ? pathWithSearch : pathWithSearch.slice(0, queryStart);
       const search =
         queryStart < 0
-          ? window.location.search
+          ? announcementNavigation
+            ? "?"
+            : window.location.search
           : pathWithSearch.slice(queryStart);
 
       // if href not equal to the route path, we need to convert it to the route path
@@ -46,7 +53,8 @@ export function useNav() {
           getLocalePathFromPathname(window.location.pathname) ?? undefined,
         search,
       });
-      const url = `${href}${hash}`;
+      const destination = href.endsWith("?") ? href.slice(0, -1) : href;
+      const url = `${destination}${hash}`;
       if (option.replace) {
         router.replace(url);
       } else {

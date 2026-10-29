@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { Scaffold, ScaffoldProps } from "@orderly.network/ui-scaffold";
 import { PathEnum } from "@/constant";
 import { useNav } from "@/hooks/useNav";
@@ -9,6 +9,7 @@ import { useScaffoldConfig } from "@/hooks/useScaffoldConfig";
 export type BaseLayoutProps = {
   children: React.ReactNode;
   initialMenu?: string;
+  topBar?: ReactNode;
   classNames?: ScaffoldProps["classNames"];
 };
 
@@ -19,6 +20,7 @@ export const BaseLayout: FC<BaseLayoutProps> = (props) => {
 
   return (
     <Scaffold
+      topBar={props.topBar}
       mainNavProps={{
         ...config.mainNavProps,
         initialMenu: props.initialMenu || PathEnum.Root,
